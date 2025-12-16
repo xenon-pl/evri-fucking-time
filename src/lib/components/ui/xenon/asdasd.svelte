@@ -1,6 +1,6 @@
 <script lang="ts">
 	export let open = false;
-
+	//sdfsdf
 	export let company_id = -1;
 	export let company_name = '';
 	export let company_internal_name = '';
