@@ -25,31 +25,53 @@
 	async function handleSubmit() {
 		submitting = true;
 		HasErrored = false;
+		ErrorMessage = '';
 
-		if (Name! == null) {
+		if (!Name || !Name.trim()) {
 			submitting = false;
 			HasErrored = true;
 			ErrorMessage = 'Add a name!';
 			return;
 		}
 
-		const res = await fetch('https://evribackend.between-my-legs-there-is-a.monster/submit', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify({
-				name: Name!,
-				description: Description,
-				uses_evri: UseEvri!,
-				courier: Courier
-			})
-		});
-		internal_name = Name!.toLowerCase();
-		await new Promise((resolve) => setTimeout(resolve, 250));
+		try {
+			const res = await fetch('https://evribackend.between-my-legs-there-is-a.monster/submit', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					name: Name.trim(),
+					description: Description?.trim() || null,
+					uses_evri: !!UseEvri,
+					courier: Courier?.trim() || null
+				})
+			});
 
-		submitting = false;
-		goto(`/company/${internal_name}`);
+			let payload: any = null;
+
+			try {
+				payload = await res.json();
+			} catch {
+				HasErrored = true;
+				ErrorMessage = 'Something went wrong!!!';
+			}
+
+			if (!res.ok) {
+				HasErrored = true;
+				ErrorMessage = payload?.error || `error while submission: (${res.status})`;
+				return;
+			}
+
+			internal_name = Name.trim().toLowerCase();
+			await new Promise((resolve) => setTimeout(resolve, 250));
+			goto(`/company/${internal_name}`);
+		} catch (err) {
+			HasErrored = true;
+			ErrorMessage = 'something went wrong!!!';
+		} finally {
+			submitting = false;
+		}
 	}
 </script>
 
@@ -86,18 +108,21 @@
 								rows={4}
 							/>
 						</div>
-						{#if !UseEvri}
-							<div class="grid gap-2">
-								<Label for="name">Courier</Label>
-								<Input
-									id="name"
-									placeholder="Royal Mail"
-									autocomplete="off"
-									required
-									bind:value={Courier}
-								/>
-							</div>
-						{/if}
+						<!-- unfinished
+							{#if !UseEvri}
+								<div class="grid gap-2">
+									<Label for="name">Courier</Label>
+									<Input
+										id="name"
+										placeholder="Royal Mail"
+										autocomplete="off"
+										required
+										bind:value={Courier}
+									/>
+								</div>
+							{/if}
+						-->
+
 						<div class="flex items-center gap-2">
 							<Switch id="evritoggle" bind:checked={UseEvri} />
 							<label for="evritoggle">Do they use Evri?</label>

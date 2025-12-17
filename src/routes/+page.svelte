@@ -28,7 +28,7 @@
 </script>
 
 <p class="absolute right-0 left-0 m-5 text-center text-muted-foreground">
-	🎉 2.0.0 - new website live!
+	🎉 2.0.1 - slight bugfix
 </p>
 <div
 	class="page mx-auto flex max-w-2xl flex-1 flex-col items-center justify-center px-4 pb-[env(safe-area-inset-bottom)] text-center"
